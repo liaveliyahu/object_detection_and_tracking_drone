@@ -1,5 +1,6 @@
 # object_detection_and_tracking_drone
-An autonomous drone that detects and tracks an object
+An autonomous drone that detects and tracks an object.
+* In Development
 
 ## Issues
 * Get video from Tello drone - I had some difficulties  to get the video from the drone. the problem caused by the Firewall. When I moved to another PC without the Firewall I amanged to get video data from the drone.
