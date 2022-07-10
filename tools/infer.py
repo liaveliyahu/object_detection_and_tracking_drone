@@ -35,6 +35,8 @@ def get_args_parser(add_help=True):
     parser.add_argument('--hide-labels', default=False, action='store_true', help='hide labels.')
     parser.add_argument('--hide-conf', default=False, action='store_true', help='hide confidences.')
     parser.add_argument('--half', action='store_true', help='whether to use FP16 half-precision inference.')
+    parser.add_argument('--object', default='person', help='name of the object the drone will detect and track.')
+    parser.add_argument('--prints', action='store_true', help='wether to use prints in the drone module.')
 
     args = parser.parse_args()
     LOGGER.info(args)
@@ -59,6 +61,8 @@ def run(weights=osp.join(ROOT, 'yolov6s.pt'),
         hide_labels=False,
         hide_conf=False,
         half=False,
+        object='person',
+        prints=True,
         ):
     """ Inference process, supporting inference on one image file or directory which containing images.
     Args:
@@ -95,7 +99,7 @@ def run(weights=osp.join(ROOT, 'yolov6s.pt'),
     # Inference
     inferer = Inferer(source, weights, device, yaml, img_size, half)
     if source == 'drone':
-        inferer.infer_drone(conf_thres, iou_thres, classes, agnostic_nms, max_det, save_dir, save_txt, save_img, hide_labels, hide_conf, view_img)
+        inferer.infer_drone(object, prints, conf_thres, iou_thres, classes, agnostic_nms, max_det, save_dir, save_txt, save_img, hide_labels, hide_conf, view_img)
     else:
         inferer.infer(conf_thres, iou_thres, classes, agnostic_nms, max_det, save_dir, save_txt, save_img, hide_labels, hide_conf, view_img)
 
