@@ -5,11 +5,14 @@ import cv2
 import av
 
 class Drone:
-    def __init__(self, simulated=False, speed = 100):
+    def __init__(self, simulated=False, prints=True, speed = 100):
         self.simulated = simulated
+        self.prints = prints
         self.speed = speed
 
-        print('Creating Drone object')
+        if self.prints:
+            print('Creating Drone object')
+
         if not self.simulated:
             self.drone = tellopy.Tello()
         self.connect_to_drone()
@@ -19,11 +22,13 @@ class Drone:
         
 
     def connect_to_drone(self):
-        print('Connecting to drone')
+        if self.prints:
+            print('Connecting to drone')
         if not self.simulated:
             self.drone.connect()
             self.drone.wait_for_connection(60)
-        print('Connection established')
+        if self.prints:
+            print('Connection established')
     
     def open_stream(self):
         if self.simulated:
@@ -47,57 +52,68 @@ class Drone:
             self.drone.quit()
 
     def takeoff(self):
-        print('Taking Off')
+        if self.prints:
+            print('Taking Off')
         if not self.simulated:
             self.drone.takeoff()
 
     def land(self):
-        print('Landing')
+        if self.prints:
+            print('Landing')
         if not self.simulated:
             self.drone.land()
 
     def move_up(self):
-        print('Moving Up')
+        if self.prints:
+            print('Moving Up')
         if not self.simulated:
             self.drone.up(self.speed)
 
     def move_down(self):
-        print('Moving Down')
+        if self.prints:
+            print('Moving Down')
         if not self.simulated:
             self.drone.down(self.speed)
     
     def move_forward(self):
-        print('Moving Forward')
+        if self.prints:
+            print('Moving Forward')
         if not self.simulated:
             self.drone.forward(self.speed)
 
     def move_backward(self):
-        print('Moving Backward')
+        if self.prints:
+            print('Moving Backward')
         if not self.simulated:
             self.drone.backward(self.speed)
 
     def move_left(self):
-        print('Moving Left')
+        if self.prints:
+            print('Moving Left')
         if not self.simulated:
             self.drone.left(self.speed)
 
     def move_right(self):
-        print('Moving Right')
+        if self.prints:
+            print('Moving Right')
         if not self.simulated:
             self.drone.right(self.speed)
     
     def move_clockwise(self):
-        print('Moving Clockwise')
+        if self.prints:
+            print('Moving Clockwise')
         if not self.simulated:
             self.drone.clockwise(self.speed)
     
     def move_counter_clockwise(self):
-        print('Moving Counter Clockwise')
+        if self.prints:
+            print('Moving Counter Clockwise')
         if not self.simulated:
             self.drone.counter_clockwise(self.speed)
 
     def drone_locked(self):
-        print('Object locked in the middle')
+        if self.prints:
+            print('Object locked in the middle')
 
     def get_image(self):
         if self.simulated:
