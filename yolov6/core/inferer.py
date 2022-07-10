@@ -20,6 +20,7 @@ from yolov6.utils.nms import non_max_suppression
 warnings.filterwarnings("ignore")
 
 from drone.brain import Brain
+from threading import Thread
 
 class Inferer:
     def __init__(self, source, weights, device, yaml, img_size, half):
@@ -160,9 +161,9 @@ class Inferer:
                             save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
                     vid_writer.write(img_src)
     
-    def infer_drone(self, conf_thres, iou_thres, classes, agnostic_nms, max_det, save_dir, save_txt, save_img, hide_labels, hide_conf, view_img):
+    def infer_drone(self, object, prints, conf_thres, iou_thres, classes, agnostic_nms, max_det, save_dir, save_txt, save_img, hide_labels, hide_conf, view_img):
         ''' Model Inference and results visualization '''
-        brain = Brain(object='person', simulated=True)
+        brain = Brain(object=object, prints=prints, simulated=True)
         vid_cap,vid_path,vid_writer, windows = True, None, None, []
         while True:
             img_src = brain.get_image()
@@ -206,10 +207,12 @@ class Inferer:
                         class_num = int(cls)  # integer class
                         label = None if hide_labels else (
                             self.class_names[class_num] if hide_conf else f'{self.class_names[class_num]} {conf:.2f}')
-                        object = label.split(' ')[0]
+                        object_name = label.split(' ')[0]
                         x, y, h, w = xyxy
                         x, y, h, w = int(x), int(y), int(h), int(w)
-                        brain.act(img_src, object, x, y, h, w, cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT)
+                        t = Thread(target=brain.act, args=(img_src, object_name, x, y, h, w, cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT,))
+                        t.start()
+                        #brain.act(img_src, object_name, x, y, h, w, cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT)
                         self.plot_box_and_label(img_ori, max(round(sum(
                             img_ori.shape) / 2 * 0.003), 2), xyxy, label, color=self.generate_colors(class_num, True))
 
