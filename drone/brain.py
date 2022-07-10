@@ -11,8 +11,11 @@ GREEN = (0,255,0)
 RED = (0,0,255)
 
 class Brain:
-    def __init__(self, object, err_dist=3, err_radius=10, track_distance=30, ref_object_width=315, ref_object_dist=30, simulated=False):
-        self.drone = Drone(simulated)
+    def __init__(self, object, err_dist=3,
+                 err_radius=10, track_distance=30,
+                 ref_object_width=315, ref_object_dist=30,
+                 delay=0, prints=True, simulated=False):
+        self.drone = Drone(simulated, prints)
         self.object = object
 
         self.track_distance = track_distance
@@ -21,6 +24,8 @@ class Brain:
         self.measure_factor = self.calc_measure_factor(ref_object_width, ref_object_dist)
         self.err_radius = err_radius
         self.image_center = None
+
+        self.delay = delay
         
         self.udp_addr = self.drone.get_udp_addr()
         self.takeoff()
@@ -90,27 +95,27 @@ class Brain:
 
         if o_y < i_y - self.err_radius:
             self.drone.move_up()
-            sleep(1)
+            sleep(self.delay)
             self.drone.speed = 0
             self.drone.move_up()
             center_flag = False
         elif o_y > i_y + self.err_radius:
             self.drone.move_down()
-            sleep(1)
+            sleep(self.delay)
             self.drone.speed = 0
             self.drone.move_down()
             center_flag = False
         
         if o_x < i_x - self.err_radius:
             self.drone.move_counter_clockwise()
-            sleep(1)
+            sleep(self.delay)
             self.drone.speed = 0
             self.drone.move_counter_clockwise()
             center_flag = False
         elif o_x > i_x + self.err_radius:
             self.drone.move_clockwise()
             center_flag = False
-            sleep(1)
+            sleep(self.delay)
             self.drone.speed = 0
             self.drone.move_clockwise()
         self.drone.speed = 60
