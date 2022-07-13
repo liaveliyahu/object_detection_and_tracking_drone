@@ -11,8 +11,8 @@ GREEN = (0,255,0)
 RED = (0,0,255)
 
 class Brain:
-    def __init__(self, object, err_dist=3,
-                 err_radius=10, track_distance=30,
+    def __init__(self, object,
+                 err_dist=3, err_radius=30, track_distance=150,
                  ref_object_width=315, ref_object_dist=30,
                  delay=0, prints=True, simulated=False):
         self.drone = Drone(simulated, prints)
@@ -25,10 +25,13 @@ class Brain:
         self.err_radius = err_radius
         self.image_center = None
 
+        w, h = self.drone.get_frame_dim()
+        self.calc_image_center(w, h)
+
         self.delay = delay
         
         self.udp_addr = self.drone.get_udp_addr()
-        self.takeoff()
+        #self.takeoff()
 
     def takeoff(self):
         self.drone.takeoff()
@@ -37,15 +40,13 @@ class Brain:
         self.drone.land()
         self.drone.quit()
 
-    def act(self, img, object, x, y, h, w, image_width, image_height):
+    def act(self, img, object, x1, y1, x2, y2):
         if object == self.object:
-            self.calc_image_center(image_width, image_height)
-
-            center_mass = self.calc_center_mass(x, y, h, w)
+            center_mass = self.calc_center_mass(x1, y1, x2, y2)
 
             self.object_centering(img, center_mass)
 
-            self.object_distancing(img, w)
+            #self.object_distancing(img, x2-x1)
 
     def get_image(self):
         return self.drone.get_image()
@@ -81,8 +82,8 @@ class Brain:
         self.image_center = image_center
         return image_center
 
-    def calc_center_mass(self, x, y, h, w):
-        object_center_mass = int(x + w/2), int(y + h/2)
+    def calc_center_mass(self, x1, y1, x2, y2):
+        object_center_mass = (x1 + x2)//2, (y1 + y2)//2
         return object_center_mass
 
     def object_centering(self, img, center_mass):
@@ -130,9 +131,10 @@ class Brain:
                 (self.image_center[0], self.image_center[1]+20), RED, 2)
 
 if __name__ == '__main__':
-    brain = Brain(simulated=True)
+    brain = Brain('cell phone', simulated=True)
     while True:
         img = brain.get_image()
+        brain.draw_centers(img, (400,400))
         cv2.imshow('image',img)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
