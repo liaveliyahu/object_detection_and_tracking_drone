@@ -163,7 +163,7 @@ class Inferer:
     
     def infer_drone(self, object, prints, conf_thres, iou_thres, classes, agnostic_nms, max_det, save_dir, save_txt, save_img, hide_labels, hide_conf, view_img):
         ''' Model Inference and results visualization '''
-        brain = Brain(object=object, prints=prints, simulated=True)
+        brain = Brain(object, prints=prints)#, simulated=True)
         vid_cap,vid_path,vid_writer, windows = True, None, None, []
         while True:
             img_src = brain.get_image()
@@ -207,12 +207,14 @@ class Inferer:
                         class_num = int(cls)  # integer class
                         label = None if hide_labels else (
                             self.class_names[class_num] if hide_conf else f'{self.class_names[class_num]} {conf:.2f}')
-                        object_name = label.split(' ')[0]
-                        x, y, h, w = xyxy
-                        x, y, h, w = int(x), int(y), int(h), int(w)
-                        t = Thread(target=brain.act, args=(img_src, object_name, x, y, h, w, cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT,))
-                        t.start()
-                        #brain.act(img_src, object_name, x, y, h, w, cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT)
+                        object_name = ' '.join(label.split()[:-1])
+
+                        x1, y1, x2, y2 = list(map(int, xyxy))
+                        # option to work with threads
+                        #t = Thread(target=brain.act, args=(img_src, object_name, x, y, h, w,))
+                        #t.start()
+
+                        brain.act(img_ori, object_name, x1, y1, x2, y2)
                         self.plot_box_and_label(img_ori, max(round(sum(
                             img_ori.shape) / 2 * 0.003), 2), xyxy, label, color=self.generate_colors(class_num, True))
 
