@@ -19,7 +19,6 @@ class Drone:
         self.open_stream()
 
         self.udp_addr = 'udp://0.0.0.0:11111'
-        
 
     def connect_to_drone(self):
         if self.prints:
@@ -36,7 +35,17 @@ class Drone:
         else:
             self.drone.sock.sendto('command'.encode (' utf-8 '), self.drone.tello_addr)
             self.drone.sock.sendto('streamon'.encode (' utf-8 '), self.drone.tello_addr)
-    
+
+    def get_frame_dim(self):
+        if self.simulated:
+            w = self.vid.get(cv2.CAP_PROP_FRAME_WIDTH)
+            h = self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
+            return (int(w), int(h))
+        else:
+            w = 640
+            h = 480
+            return (int(w), int(h))
+
     def get_udp_addr(self):
         if self.simulated:
             return 0
@@ -156,5 +165,3 @@ if __name__ == '__main__':
     cv2.waitKey(20000) # get 20 seconds of video
 
     cv2.destroyAllWindows()
-
-
